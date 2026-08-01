@@ -3,13 +3,17 @@
     "name": "widget.name",
     "description": "widget.description",
     "short_description": "widget.short_description",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "interface_version": 2,
     "installation": false,
-    "locale": ["en", "ru"]
+    "locale": ["en", "ru"],
+    "support": {
+      "link": "https://t.me/saidnurmuhammadulloxon",
+      "email": "saidnurmuhammadullxonn@gmail.com"
+    }
   },
-  "locations": ["llist-0", "clist-0", "digital_pipeline"],
-  "webhook_url": "__WEBHOOK_URL__",
+  "locations": ["llist-0", "clist-0", "digital_pipeline", "settings"],
+  "webhook_url": "http://localhost:3001/api/webhooks/digital-pipeline",
   "dp": {
     "settings": {
       "spreadsheet_url": {
