@@ -51,6 +51,40 @@ There is no per-account install flow to drive from the widget side. This project
 
 Rotating or revoking the token is a config change + restart, not a re-install — see [docs/AMOCRM_SETUP.md](docs/AMOCRM_SETUP.md#5-rotatingrevoking-access).
 
+## Digital Pipeline trigger (Google Sheets export)
+
+Alongside the manual "Export to Excel" flow, `manifest.json` also declares `"digital_pipeline"` in `locations` plus a `dp` block, so the widget appears as an option in a pipeline stage's **Добавить триггер** modal (next to "Salesbot", "Создать задачу", "API", etc.):
+
+```json
+"dp": {
+  "settings": {
+    "spreadsheet_url": { "name": "settings.spreadsheet_url", "type": "text", "required": true },
+    "sheet_name": { "name": "settings.sheet_name", "type": "text", "required": true },
+    "field_codes": { "name": "settings.field_codes", "type": "textarea", "required": false }
+  },
+  "action_multiple": false
+}
+```
+
+The quick-setup form for these fields (text/textarea inputs) is rendered by amoCRM itself from this declarative schema — that's the documented, standard mechanism. This project deliberately does **not** implement a custom JS `dpSettings()`-style callback in `script.ts` for this: there's no reliable documentation of such a callback's exact contract in this codebase's research, and shipping speculative code against an unconfirmed API is worse than relying on the declarative path that's actually documented.
+
+When the trigger fires, amoCRM POSTs to the manifest's `webhook_url` (substituted at build time from `APP_URL`, see below) with a payload roughly shaped like:
+
+```json
+{
+  "event": { "type": 14, "type_code": "lead_status_changed", "data": { "id": 123, "element_type": 2, "status_id": 1, "pipeline_id": 1 }, "time": 1700000000 },
+  "action": { "settings": { "widget": { "settings": { "spreadsheet_url": "...", "sheet_name": "...", "field_codes": "..." } } } },
+  "subdomain": "yourcompany",
+  "account_id": 12345678
+}
+```
+
+`backend/src/digital-pipeline/digital-pipeline.controller.ts` validates this against `digitalPipelineWebhookSchema` (shared package), looks up the connected `AmoAccount` and `GoogleAccount`, fetches the lead via the existing `LeadsRepository`, and appends a row via `GoogleSheetsService` — see [docs/GOOGLE_SHEETS_SETUP.md](docs/GOOGLE_SHEETS_SETUP.md) for the Google OAuth setup this depends on.
+
+> **Unverified**: neither the exact ack JSON amoCRM expects back from `webhook_url`, nor whether declarative `dp.settings` alone is sufficient to render the quick-setup form (vs. requiring some additional callback), has been confirmed against a live amoCRM account — this codebase was built without one, same caveat as the rest of this file. `DigitalPipelineController` currently responds `{"success": true}` / HTTP 200 as a best-effort placeholder. Verify both after uploading the widget and adjust if amoCRM's real behavior differs.
+
+The "Connect Google Account" UI is opened via the loader's `settings()` callback (previously a no-op — now opens the same overlay/iframe mechanism as the export button, pointed at `?view=settings`), landing on `frontend/src/components/settings/google-settings-panel.tsx`.
+
 ## Closing the modal
 
 The loader listens for `window.postMessage({ type: 'amocrm-excel-export:close' })` from the iframe (from any origin — it's just a close signal, not sensitive data) and removes the overlay. The frontend sends this when the user clicks the close (✕) button in its header (only rendered when `window.parent !== window`, i.e. when actually embedded). The loader also closes on `Escape` and on backdrop click, independent of the iframe.
@@ -58,7 +92,7 @@ The loader listens for `window.postMessage({ type: 'amocrm-excel-export:close' }
 ## Building and packaging
 
 ```bash
-WIDGET_URL=https://export.yourdomain.com npm run package:widget
+WIDGET_URL=https://export.yourdomain.com APP_URL=https://export-api.yourdomain.com npm run package:widget
 ```
 
-Produces `widget/excel-export-widget.zip` containing `manifest.json`, `script.js` (with the `WIDGET_URL` placeholder substituted in), and `i18n/{en,ru}/config.json`. Upload that zip in your amoCRM developer account under **Widgets → Add widget**. See [docs/AMOCRM_SETUP.md](docs/AMOCRM_SETUP.md) for the full walkthrough including required manifest fields, which may need adjusting to match the current amoCRM developer console at the time you publish.
+Produces `widget/excel-export-widget.zip` containing `script.js` (with the `WIDGET_URL` placeholder substituted in) and `manifest.json` (with the `APP_URL`-derived `webhook_url` placeholder substituted in — copied from the root `manifest.json` template into `dist/manifest.json` so the checked-in source stays environment-agnostic), plus `i18n/{en,ru}/config.json`. Upload that zip in your amoCRM developer account under **Widgets → Add widget**. See [docs/AMOCRM_SETUP.md](docs/AMOCRM_SETUP.md) for the full walkthrough including required manifest fields, which may need adjusting to match the current amoCRM developer console at the time you publish.

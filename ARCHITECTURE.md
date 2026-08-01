@@ -50,9 +50,13 @@ This is a deliberate, honest simplification: amoCRM does not expose a documented
 | Domain | `shared/src/types/*.ts` | `AmoLead`, `ExportRequest`, `ExportJob` |
 | Infrastructure | `repositories/`, `*.client.ts` | `PrismaAccountRepository`, `AmoCrmHttpClient`, `ExcelExportWriter` |
 
-**Repository Pattern**: every piece of external state access is behind an interface + DI token (`IAccountRepository` / `ACCOUNT_REPOSITORY`, `IExportJobRepository` / `EXPORT_JOB_REPOSITORY`, `IExportQueueAdapter` / `EXPORT_QUEUE_ADAPTER`). Swapping Prisma for another ORM, or BullMQ for another queue, means writing a new adapter — not touching application logic.
+**Repository Pattern**: every piece of external state access is behind an interface + DI token (`IAccountRepository` / `ACCOUNT_REPOSITORY`, `IExportJobRepository` / `EXPORT_JOB_REPOSITORY`, `IExportQueueAdapter` / `EXPORT_QUEUE_ADAPTER`, `IGoogleAccountRepository` / `GOOGLE_ACCOUNT_REPOSITORY`). Swapping Prisma for another ORM, or BullMQ for another queue, means writing a new adapter — not touching application logic.
 
 **Dependency Injection**: standard Nest module graph. `AccountModule` (Prisma-backed account/token storage) has no dependencies; `AmoCrmModule` depends on it for token refresh; `AuthModule` and `ExportModule` depend on both. Any module that guards a route with `WidgetSessionGuard` must import `AccountModule` directly (the guard needs `ACCOUNT_REPOSITORY` resolved in its own module's injector context) — see `MetaModule` for the minimal example.
+
+### Digital Pipeline → Google Sheets export
+
+A second, independent flow alongside the manual export: `backend/src/google/` holds Google OAuth (`GoogleOAuthService`, token refresh mirrors `AmoCrmTokenProvider`'s shape) and Sheets writing (`GoogleSheetsService`); `backend/src/digital-pipeline/` holds the public webhook (`POST /api/webhooks/digital-pipeline`, no `WidgetSessionGuard` — amoCRM calls it server-to-server, not through the browser session flow) that orchestrates: look up the `AmoAccount`, look up its connected `GoogleAccount`, fetch the lead via the existing `LeadsRepository`, append a row via `GoogleSheetsService`. Google refresh/access tokens are encrypted at rest (`GoogleAccount.refreshTokenEncrypted`/`accessTokenEncrypted`, AES-256-GCM via `google/crypto/token-cipher.ts`) since — unlike `AMOCRM_LONG_LIVED_TOKEN`, an env-only secret — these are per-customer secrets living in the database. See [WIDGET.md](WIDGET.md#digital-pipeline-trigger-google-sheets-export) and [docs/GOOGLE_SHEETS_SETUP.md](docs/GOOGLE_SHEETS_SETUP.md).
 
 ## Key design decisions
 

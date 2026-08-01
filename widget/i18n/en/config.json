@@ -5,9 +5,18 @@
     "short_description": "Export your data to Excel"
   },
   "actions": {
-    "export_button": "Export to Excel"
+    "export_button": "Export to Excel",
+    "connect_google": "Connect Google Account",
+    "disconnect_google": "Disconnect Google Account"
   },
   "errors": {
     "missing_context": "Could not detect the current account. Please reload the page."
+  },
+  "settings": {
+    "spreadsheet_url": "Google Sheet URL",
+    "sheet_name": "Sheet name",
+    "field_codes": "Comma-separated field codes (optional)",
+    "connected_as": "Connected as",
+    "not_connected": "Google account not connected"
   }
 }

@@ -11,14 +11,32 @@ datasource db {
 /// Integration long-lived token (see AMOCRM_SUBDOMAIN/AMOCRM_LONG_LIVED_TOKEN).
 /// Populated automatically at boot by AmoCrmAccountBootstrapService.
 model AmoAccount {
-  id          Int         @id @default(autoincrement())
-  accountId   BigInt      @unique
-  subdomain   String
-  connectedAt DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  exportJobs  ExportJob[]
+  id            Int            @id @default(autoincrement())
+  accountId     BigInt         @unique
+  subdomain     String
+  connectedAt   DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  exportJobs    ExportJob[]
+  googleAccount GoogleAccount?
 
   @@map("amo_accounts")
+}
+
+/// A Google account connected via OAuth to this amoCRM account, used to write
+/// rows to Google Sheets when a Digital Pipeline trigger fires. Tokens are
+/// encrypted at rest with GOOGLE_TOKEN_ENCRYPTION_KEY — see backend/src/google/crypto/token-cipher.ts.
+model GoogleAccount {
+  id                    Int        @id @default(autoincrement())
+  account               AmoAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId             Int        @unique
+  googleEmail           String
+  refreshTokenEncrypted String
+  accessTokenEncrypted  String?
+  accessTokenExpiresAt  DateTime?
+  connectedAt           DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@map("google_accounts")
 }
 
 enum ExportEntityTypeDb {

@@ -8,5 +8,26 @@
     "installation": false,
     "locale": ["en", "ru"]
   },
-  "locations": ["llist-0", "clist-0"]
+  "locations": ["llist-0", "clist-0", "digital_pipeline"],
+  "webhook_url": "__WEBHOOK_URL__",
+  "dp": {
+    "settings": {
+      "spreadsheet_url": {
+        "name": "settings.spreadsheet_url",
+        "type": "text",
+        "required": true
+      },
+      "sheet_name": {
+        "name": "settings.sheet_name",
+        "type": "text",
+        "required": true
+      },
+      "field_codes": {
+        "name": "settings.field_codes",
+        "type": "textarea",
+        "required": false
+      }
+    },
+    "action_multiple": false
+  }
 }

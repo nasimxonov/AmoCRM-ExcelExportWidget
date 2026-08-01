@@ -22,7 +22,7 @@ archive.on('error', (err) => {
 });
 
 archive.pipe(output);
-archive.file(path.join(root, 'manifest.json'), { name: 'manifest.json' });
+archive.file(path.join(root, 'dist', 'manifest.json'), { name: 'manifest.json' });
 archive.file(path.join(root, 'dist', 'script.js'), { name: 'script.js' });
 archive.directory(path.join(root, 'i18n'), 'i18n');
 

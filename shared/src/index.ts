@@ -51,3 +51,14 @@ export type { ExportRequestDto, CancelExportDto } from './dto/export.dto';
 
 export { sessionRequestSchema, sessionResponseSchema } from './dto/auth.dto';
 export type { SessionRequestDto, SessionResponseDto } from './dto/auth.dto';
+
+export type {
+  DigitalPipelineTriggerSettings,
+  DigitalPipelineEventData,
+  DigitalPipelineEvent,
+  DigitalPipelineWebhookPayload,
+} from './types/digital-pipeline';
+export type { GoogleConnectionStatus } from './types/google';
+
+export { digitalPipelineWebhookSchema } from './dto/digital-pipeline.dto';
+export type { DigitalPipelineWebhookDto } from './dto/digital-pipeline.dto';

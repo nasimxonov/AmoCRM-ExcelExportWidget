@@ -115,7 +115,7 @@ function handleEscape(event: KeyboardEvent): void {
   if (event.key === 'Escape') closeModal();
 }
 
-function openExportModal(context: WidgetContext): void {
+function openModal(url: string, title: string): void {
   if (document.getElementById(OVERLAY_ID)) return;
 
   const overlay = document.createElement('div');
@@ -145,9 +145,9 @@ function openExportModal(context: WidgetContext): void {
   closeButton.addEventListener('click', closeModal);
 
   const iframe = document.createElement('iframe');
-  iframe.src = buildIframeUrl(context);
+  iframe.src = url;
   iframe.style.cssText = 'width:100%;height:100%;border:0;';
-  iframe.setAttribute('title', 'Excel Export');
+  iframe.setAttribute('title', title);
 
   panel.appendChild(closeButton);
   panel.appendChild(iframe);
@@ -160,6 +160,17 @@ function openExportModal(context: WidgetContext): void {
   document.body.appendChild(overlay);
   window.addEventListener('message', handleChildMessage);
   document.addEventListener('keydown', handleEscape);
+}
+
+function openExportModal(context: WidgetContext): void {
+  openModal(buildIframeUrl(context), 'Excel Export');
+}
+
+function openSettingsModal(self: AmoWidgetSelf): void {
+  const context = getWidgetContext(self);
+  const url = new URL(buildIframeUrl(context));
+  url.searchParams.set('view', 'settings');
+  openModal(url.toString(), 'Widget settings');
 }
 
 function injectTriggerButton(self: AmoWidgetSelf, $: JQueryStatic): void {
@@ -227,6 +238,7 @@ define(['jquery'], ($: JQueryStatic) => {
       },
       settings: () => {
         diag('callbacks.settings() invoked');
+        openSettingsModal(this);
         return true;
       },
       onSave: () => {

@@ -27,13 +27,13 @@ That's the entire credential set the backend needs — there's no client id/secr
 ## 3. Build and upload the widget
 
 ```bash
-WIDGET_URL=https://export.yourdomain.com npm run package:widget
+WIDGET_URL=https://export.yourdomain.com APP_URL=https://export-api.yourdomain.com npm run package:widget
 ```
 
 This produces `widget/excel-export-widget.zip`. In amoCRM/Kommo: **Settings → Integrations → your integration → Widgets → Add widget** (or the equivalent path in your developer console version), upload the zip.
 
 The zip contains:
-- `manifest.json` — widget metadata (name, version, supported locales)
+- `manifest.json` — widget metadata (name, version, supported locales), plus `digital_pipeline` in `locations`/a `dp` settings block and `webhook_url` (baked in from `APP_URL`) for the Digital Pipeline → Google Sheets export trigger — see [WIDGET.md](../WIDGET.md#digital-pipeline-trigger-google-sheets-export) and [GOOGLE_SHEETS_SETUP.md](GOOGLE_SHEETS_SETUP.md)
 - `script.js` — the loader, with `WIDGET_URL` baked in (see [WIDGET.md](../WIDGET.md#building-and-packaging))
 - `i18n/en/config.json`, `i18n/ru/config.json` — localized strings
 

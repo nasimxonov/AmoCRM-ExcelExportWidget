@@ -16,6 +16,12 @@ export interface AppConfig {
     subdomain: string;
     longLivedToken: string;
   };
+  google: {
+    clientId: string;
+    clientSecret: string;
+    redirectUri: string;
+    tokenEncryptionKey: string;
+  };
   security: {
     jwtSecret: string;
     jwtExpiresIn: string;
@@ -45,6 +51,14 @@ export function buildConfig(env: EnvShape): AppConfig {
     amocrm: {
       subdomain: env.AMOCRM_SUBDOMAIN,
       longLivedToken: env.AMOCRM_LONG_LIVED_TOKEN,
+    },
+    google: {
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      redirectUri: env.GOOGLE_OAUTH_REDIRECT_URI.trim().length > 0
+        ? env.GOOGLE_OAUTH_REDIRECT_URI
+        : `${env.APP_URL.replace(/\/$/, '')}/api/google/oauth/callback`,
+      tokenEncryptionKey: env.GOOGLE_TOKEN_ENCRYPTION_KEY,
     },
     security: {
       jwtSecret: env.JWT_SECRET,

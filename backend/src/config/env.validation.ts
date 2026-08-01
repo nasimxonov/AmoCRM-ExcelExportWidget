@@ -12,6 +12,13 @@ const envSchema = z.object({
   AMOCRM_SUBDOMAIN: z.string().min(1, 'AMOCRM_SUBDOMAIN is required'),
   AMOCRM_LONG_LIVED_TOKEN: z.string().min(1, 'AMOCRM_LONG_LIVED_TOKEN is required'),
 
+  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
+  GOOGLE_CLIENT_SECRET: z.string().min(1, 'GOOGLE_CLIENT_SECRET is required'),
+  GOOGLE_OAUTH_REDIRECT_URI: z.string().url().optional().default(''),
+  GOOGLE_TOKEN_ENCRYPTION_KEY: z
+    .string()
+    .length(64, 'GOOGLE_TOKEN_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)'),
+
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('12h'),
 

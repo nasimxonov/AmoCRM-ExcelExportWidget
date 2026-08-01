@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
 import { useWidgetSession } from '@/hooks/use-widget-session';
 import { ExportPanel } from '@/components/export/export-panel';
+import { GoogleSettingsPanel } from '@/components/settings/google-settings-panel';
 import { isEmbeddedInParentFrame, requestCloseFromParent } from '@/lib/parent-messenger';
 
 function CenteredMessage({ children }: { children: React.ReactNode }): React.JSX.Element {
@@ -47,7 +48,10 @@ export default function App(): React.JSX.Element {
         </CenteredMessage>
       )}
 
-      {session.isSuccess && <ExportPanel context={session.data.context} />}
+      {session.isSuccess && session.data.context.view === 'settings' && <GoogleSettingsPanel />}
+      {session.isSuccess && session.data.context.view === 'export' && (
+        <ExportPanel context={session.data.context} />
+      )}
 
       <Toaster />
     </div>

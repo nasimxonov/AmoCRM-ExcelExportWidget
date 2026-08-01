@@ -7,12 +7,15 @@ import { ExportEntityType } from '@excel-export/shared';
  * information to an externally-hosted page. See WIDGET.md for the full
  * handshake description.
  */
+export type WidgetView = 'export' | 'settings';
+
 export interface AmoWidgetContext {
   accountId: number;
   subdomain: string;
   userId: number;
   entityType: ExportEntityType | null;
   selectedIds: number[];
+  view: WidgetView;
 }
 
 function parseIds(raw: string | null): number[] {
@@ -43,5 +46,6 @@ export function readAmoWidgetContext(): AmoWidgetContext | null {
     entityType:
       entityType && validEntityTypes.includes(entityType) ? (entityType as ExportEntityType) : null,
     selectedIds: parseIds(params.get('selectedIds')),
+    view: params.get('view') === 'settings' ? 'settings' : 'export',
   };
 }

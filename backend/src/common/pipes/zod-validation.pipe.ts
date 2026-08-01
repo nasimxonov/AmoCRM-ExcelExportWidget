@@ -1,9 +1,13 @@
 import type { PipeTransform } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import type { ZodSchema } from 'zod';
+import type { ZodType, ZodTypeDef } from 'zod';
 
 export class ZodValidationPipe<T> implements PipeTransform<unknown, T> {
-  constructor(private readonly schema: ZodSchema<T>) {}
+  // Input intentionally left as `unknown` (rather than `T`) so schemas that
+  // use `.transform()` — where the parsed input shape differs from the
+  // output shape, e.g. digitalPipelineWebhookSchema's snake_case wire format
+  // -> camelCase domain type — can still be passed here.
+  constructor(private readonly schema: ZodType<T, ZodTypeDef, unknown>) {}
 
   transform(value: unknown): T {
     const result = this.schema.safeParse(value);

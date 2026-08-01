@@ -5,9 +5,18 @@
     "short_description": "Экспорт данных в Excel"
   },
   "actions": {
-    "export_button": "Экспорт в Excel"
+    "export_button": "Экспорт в Excel",
+    "connect_google": "Подключить Google аккаунт",
+    "disconnect_google": "Отключить Google аккаунт"
   },
   "errors": {
     "missing_context": "Не удалось определить текущий аккаунт. Перезагрузите страницу."
+  },
+  "settings": {
+    "spreadsheet_url": "Ссылка на Google таблицу",
+    "sheet_name": "Название листа",
+    "field_codes": "Коды полей через запятую (необязательно)",
+    "connected_as": "Подключено как",
+    "not_connected": "Google аккаунт не подключен"
   }
 }

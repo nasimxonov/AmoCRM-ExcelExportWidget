@@ -38,6 +38,8 @@ Edit `backend/.env`:
 | `AMOCRM_SUBDOMAIN` / `AMOCRM_LONG_LIVED_TOKEN` | From your amoCRM Private Integration's "Keys and scopes" tab — see [AMOCRM_SETUP.md](AMOCRM_SETUP.md). For UI-only development any non-empty placeholder string works for both; the backend verifies them against `/api/v4/account` at boot and just logs a warning (rather than refusing to start) if they don't resolve to a real account — see step 6 below. |
 | `JWT_SECRET` | Any string ≥ 16 characters, e.g. `openssl rand -hex 24` |
 | `DATABASE_URL` | Leave as-is if using the bundled `docker-compose.yml` Postgres |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | From a Google Cloud OAuth client — see [GOOGLE_SHEETS_SETUP.md](GOOGLE_SHEETS_SETUP.md). Same placeholder-friendly rule as the amoCRM credentials: any non-empty string satisfies startup validation; only the actual "Connect Google Account" flow needs real values. |
+| `GOOGLE_TOKEN_ENCRYPTION_KEY` | Must be a real 64-character hex string even as a placeholder (validated by format, not just presence) — `openssl rand -hex 32` |
 
 `frontend/.env` just needs `VITE_API_URL` pointing at the backend (default `http://localhost:3001` is correct for local dev).
 

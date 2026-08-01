@@ -11,6 +11,7 @@ The backend is a standard Node/NestJS service — deploy it however you already 
    - `NODE_ENV=production`
    - `APP_URL` / `WIDGET_URL` set to your real public HTTPS URLs
    - `AMOCRM_SUBDOMAIN` / `AMOCRM_LONG_LIVED_TOKEN` — the Private Integration credentials from [AMOCRM_SETUP.md](AMOCRM_SETUP.md); the backend calls `/api/v4/account` with these at boot to auto-register the connected account
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_TOKEN_ENCRYPTION_KEY` — real Google OAuth client credentials and a freshly generated encryption key (not the dev placeholder), see [GOOGLE_SHEETS_SETUP.md](GOOGLE_SHEETS_SETUP.md)
    - `CORS_ORIGINS` must include your deployed frontend's origin
    - `DATABASE_URL` pointing at a real, backed-up PostgreSQL instance (not the disposable dev container)
    - `REDIS_URL` if you're running more than one backend instance (required for the BullMQ queue adapter — see ARCHITECTURE.md)
@@ -29,10 +30,10 @@ The backend is a standard Node/NestJS service — deploy it however you already 
 The widget isn't deployed to your infrastructure at all — it's zipped and uploaded to amoCRM's own widget hosting:
 
 ```bash
-WIDGET_URL=https://export.yourdomain.com npm run package:widget
+WIDGET_URL=https://export.yourdomain.com APP_URL=https://export-api.yourdomain.com npm run package:widget
 ```
 
-produces `widget/excel-export-widget.zip`. Upload it per [docs/AMOCRM_SETUP.md](AMOCRM_SETUP.md). Re-run this (with the same `WIDGET_URL`) and re-upload whenever `widget/src/script.ts` changes; you do **not** need to re-upload when only `frontend/` changes, since the loader always points at the same hosted `WIDGET_URL` and the browser always fetches the latest deployed frontend build.
+produces `widget/excel-export-widget.zip`. Upload it per [docs/AMOCRM_SETUP.md](AMOCRM_SETUP.md). Re-run this (with the same `WIDGET_URL`/`APP_URL`) and re-upload whenever `widget/src/script.ts` or `widget/manifest.json` changes; you do **not** need to re-upload when only `frontend/` changes, since the loader always points at the same hosted `WIDGET_URL` and the browser always fetches the latest deployed frontend build.
 
 ## Release checklist
 
@@ -40,5 +41,6 @@ produces `widget/excel-export-widget.zip`. Upload it per [docs/AMOCRM_SETUP.md](
 - [ ] `npm run prisma:deploy -w backend` run against the production database
 - [ ] Backend logs `amoCRM account <id> (<subdomain>) registered from long-lived token` on startup (not the "Could not verify" warning — see [AMOCRM_SETUP.md](AMOCRM_SETUP.md))
 - [ ] Frontend built with `VITE_API_URL` pointing at the production backend, and deployed without a framing-blocking header
-- [ ] Widget packaged with `WIDGET_URL` pointing at the production frontend, uploaded to amoCRM
+- [ ] Widget packaged with `WIDGET_URL`/`APP_URL` pointing at the production frontend/backend, uploaded to amoCRM
 - [ ] A real export completed against the connected amoCRM account before wider rollout (see TODO.md — this has not been done in this repo's build/verification pass)
+- [ ] A real Digital Pipeline trigger fired end-to-end (Google account connected, trigger configured, row landed in the target sheet) — see TODO.md, also not verified against a live account in this repo's build/verification pass

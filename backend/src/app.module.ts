@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { ExportModule } from './export/export.module';
 import { HealthModule } from './health/health.module';
 import { MetaModule } from './meta/meta.module';
+import { GoogleModule } from './google/google.module';
+import { DigitalPipelineModule } from './digital-pipeline/digital-pipeline.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
@@ -33,6 +35,8 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     ExportModule,
     HealthModule,
     MetaModule,
+    GoogleModule,
+    DigitalPipelineModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
