@@ -1,0 +1,17 @@
+{
+  "name": "@excel-export/widget",
+  "version": "1.0.0",
+  "private": true,
+  "description": "amoCRM in-page widget loader: adds an 'Export to Excel' button to leads/contacts/companies lists and opens the hosted export UI in a modal iframe.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/inject-url.js",
+    "package": "npm run build && node scripts/package-zip.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rimraf dist *.zip"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2"
+  }
+}

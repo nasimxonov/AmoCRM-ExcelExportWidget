@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Single row caching the amoCRM account that owns this deployment's Private
+/// Integration long-lived token (see AMOCRM_SUBDOMAIN/AMOCRM_LONG_LIVED_TOKEN).
+/// Populated automatically at boot by AmoCrmAccountBootstrapService.
+model AmoAccount {
+  id          Int         @id @default(autoincrement())
+  accountId   BigInt      @unique
+  subdomain   String
+  connectedAt DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  exportJobs  ExportJob[]
+
+  @@map("amo_accounts")
+}
+
+enum ExportEntityTypeDb {
+  leads
+  contacts
+  companies
+}
+
+enum ExportJobStatusDb {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+}
+
+/// Persisted state of a background export job so progress survives process
+/// restarts and can be polled/streamed by the frontend.
+model ExportJob {
+  id             String             @id @default(uuid())
+  account        AmoAccount         @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId      Int
+  entityType     ExportEntityTypeDb
+  status         ExportJobStatusDb  @default(pending)
+  requestPayload Json
+  processed      Int                @default(0)
+  total          Int                @default(0)
+  stage          String             @default("fetching")
+  fileName       String?
+  filePath       String?
+  errorMessage   String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  completedAt    DateTime?
+
+  @@index([accountId, status])
+  @@map("export_jobs")
+}

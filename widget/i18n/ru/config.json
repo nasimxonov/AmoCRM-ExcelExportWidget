@@ -1,0 +1,13 @@
+{
+  "widget": {
+    "name": "Экспорт в Excel",
+    "description": "Экспорт сделок, контактов и компаний в форматированные файлы Microsoft Excel.",
+    "short_description": "Экспорт данных в Excel"
+  },
+  "actions": {
+    "export_button": "Экспорт в Excel"
+  },
+  "errors": {
+    "missing_context": "Не удалось определить текущий аккаунт. Перезагрузите страницу."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "widget": {
+    "name": "Excel Export",
+    "description": "Export leads, contacts and companies to formatted Microsoft Excel files.",
+    "short_description": "Export your data to Excel"
+  },
+  "actions": {
+    "export_button": "Export to Excel"
+  },
+  "errors": {
+    "missing_context": "Could not detect the current account. Please reload the page."
+  }
+}

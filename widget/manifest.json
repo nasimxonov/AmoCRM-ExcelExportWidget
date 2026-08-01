@@ -1,0 +1,12 @@
+{
+  "widget": {
+    "name": "widget.name",
+    "description": "widget.description",
+    "short_description": "widget.short_description",
+    "version": "1.0.0",
+    "interface_version": 2,
+    "installation": false,
+    "locale": ["en", "ru"]
+  },
+  "locations": ["llist-0", "clist-0"]
+}
